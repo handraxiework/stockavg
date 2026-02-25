@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Average Calculator - Formatted</title>
+    <title>Stock Average Calculator - Mobile Fixed</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -12,32 +12,43 @@
             --bg: #f8fafc;
             --border: #e2e8f0;
         }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; color: #1e293b; }
-        .container { max-width: 700px; margin: auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: var(--primary); margin-top: 0; }
         
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 10px; color: #1e293b; margin: 0; }
+        
+        .container { max-width: 700px; margin: 10px auto; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: var(--primary); margin-top: 0; font-size: 1.5rem; }
+        
+        /* Grid adjusts to 1 column on mobile */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        @media (max-width: 500px) {
+            .grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+        }
+        
         .full-width { grid-column: span 2; }
         
-        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85rem; color: #475569; }
-        input { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 0.8rem; color: #475569; }
+        input { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 1rem; -webkit-appearance: none; }
         input:focus { outline: none; border-color: var(--primary); }
         
-        button { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; margin-top: 10px; }
-        button:hover { background: #1d4ed8; }
-
-        .results { margin-top: 30px; display: none; }
-        .card { padding: 20px; border-radius: 12px; margin-bottom: 15px; background: #f8fafc; border: 1px solid var(--border); }
-        .card-title { font-weight: bold; border-bottom: 1px solid var(--border); margin-bottom: 10px; padding-bottom: 5px; color: var(--primary); }
+        button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; margin-top: 5px; }
         
-        .row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .results { margin-top: 25px; display: none; }
+        .card { padding: 15px; border-radius: 12px; margin-bottom: 15px; background: #f8fafc; border: 1px solid var(--border); }
+        .card-title { font-weight: bold; border-bottom: 1px solid var(--border); margin-bottom: 10px; padding-bottom: 5px; color: var(--primary); font-size: 0.9rem; }
+        
+        .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
         .val { font-weight: 700; }
         .profit { color: var(--success); }
         .loss { color: var(--danger); }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
-        th, td { padding: 10px; border: 1px solid var(--border); text-align: left; }
-        th { background: #f1f5f9; }
+        /* THE FIX: Table wrapper for horizontal scroll on small screens */
+        .table-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 400px; /* Ensures table doesn't squish too much */ }
+        th, td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; }
+        th { background: #f1f5f9; color: #475569; }
+        tr:last-child td { border-bottom: none; }
     </style>
 </head>
 <body>
@@ -52,19 +63,19 @@
         </div>
         <div class="input-group">
             <label>Current Avg Price</label>
-            <input type="text" id="currAvg" class="number-input" placeholder="0">
+            <input type="text" id="currAvg" class="number-input" placeholder="0" inputmode="decimal">
         </div>
         <div class="input-group">
             <label>Current Total Lot</label>
-            <input type="text" id="currLot" class="number-input" placeholder="0">
+            <input type="text" id="currLot" class="number-input" placeholder="0" inputmode="numeric">
         </div>
         <div class="input-group">
             <label>Last Market Price</label>
-            <input type="text" id="marketPrice" class="number-input" placeholder="0">
+            <input type="text" id="marketPrice" class="number-input" placeholder="0" inputmode="decimal">
         </div>
         <div class="input-group">
             <label>Budget for New Purchase</label>
-            <input type="text" id="budget" class="number-input" placeholder="0">
+            <input type="text" id="budget" class="number-input" placeholder="0" inputmode="numeric">
         </div>
     </div>
 
@@ -72,54 +83,56 @@
 
     <div id="results" class="results">
         <div class="card">
-            <div class="card-title">Purchase Analysis for <span id="resSymbol">-</span></div>
-            <div class="row">Lots you can buy: <span id="newLots" class="val">-</span></div>
-            <div class="row">Shares you can buy: <span id="newShares" class="val">-</span></div>
-            <div class="row">Total Cost for this buy: <span id="buyCost" class="val">-</span></div>
+            <div class="card-title">Purchase Analysis: <span id="resSymbol">-</span></div>
+            <div class="row">Lots to buy: <span id="newLots" class="val">-</span></div>
+            <div class="row">Shares to buy: <span id="newShares" class="val">-</span></div>
+            <div class="row">Estimated Cost: <span id="buyCost" class="val">-</span></div>
         </div>
 
         <div class="card">
             <div class="card-title">Comparison Summary</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Metric</th>
-                        <th>Current</th>
-                        <th>After Purchase</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Avg Price</td>
-                        <td id="tableOldAvg">-</td>
-                        <td id="tableNewAvg" class="val">-</td>
-                    </tr>
-                    <tr>
-                        <td>Total Lots</td>
-                        <td id="tableOldLots">-</td>
-                        <td id="tableNewLots">-</td>
-                    </tr>
-                    <tr>
-                        <td>Gain/Loss Amt</td>
-                        <td id="tableOldGL">-</td>
-                        <td id="tableNewGL">-</td>
-                    </tr>
-                    <tr>
-                        <td>Gain/Loss %</td>
-                        <td id="tableOldPerc">-</td>
-                        <td id="tableNewPerc">-</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Current</th>
+                            <th>After Buy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Avg Price</td>
+                            <td id="tableOldAvg">-</td>
+                            <td id="tableNewAvg" class="val">-</td>
+                        </tr>
+                        <tr>
+                            <td>Total Lots</td>
+                            <td id="tableOldLots">-</td>
+                            <td id="tableNewLots">-</td>
+                        </tr>
+                        <tr>
+                            <td>Gain/Loss Amt</td>
+                            <td id="tableOldGL">-</td>
+                            <td id="tableNewGL">-</td>
+                        </tr>
+                        <tr>
+                            <td>Gain/Loss %</td>
+                            <td id="tableOldPerc">-</td>
+                            <td id="tableNewPerc">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 10px; text-align: center;">(Swipe table left/right to view full data on mobile)</p>
         </div>
     </div>
 </div>
 
 <script>
-    // 1. Function to format input as user types
+    // Format input with thousand separators
     document.querySelectorAll('.number-input').forEach(input => {
         input.addEventListener('input', function(e) {
-            // Remove everything except numbers
             let value = this.value.replace(/,/g, '');
             if (!isNaN(value) && value !== "") {
                 this.value = parseFloat(value).toLocaleString('en-US');
@@ -129,7 +142,6 @@
         });
     });
 
-    // Helper to get clean numeric value from formatted input
     function getCleanValue(id) {
         let val = document.getElementById(id).value.replace(/,/g, '');
         return parseFloat(val) || 0;
@@ -147,7 +159,6 @@
             return;
         }
 
-        // Logic
         const oldShares = currLot * 100;
         const lotsToBuy = Math.floor((budget / marketPrice) / 100);
         const sharesToBuy = lotsToBuy * 100;
@@ -165,7 +176,6 @@
         const newGL = newMarketVal - totalCostNew;
         const newPerc = totalCostNew > 0 ? (newGL / totalCostNew) * 100 : 0;
 
-        // Display
         document.getElementById('results').style.display = 'block';
         document.getElementById('resSymbol').innerText = symbol.toUpperCase();
         document.getElementById('newLots').innerText = lotsToBuy.toLocaleString();
@@ -173,7 +183,6 @@
         document.getElementById('buyCost').innerText = actualSpend.toLocaleString();
 
         document.getElementById('tableOldAvg').innerText = currAvg.toLocaleString();
-        // Specifically adding thousand separator to the New Avg result
         document.getElementById('tableNewAvg').innerText = newAvgPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         
         document.getElementById('tableOldLots').innerText = currLot.toLocaleString();
@@ -183,6 +192,9 @@
         formatTableCell('tableOldPerc', oldPerc.toFixed(2) + "%", oldGL);
         formatTableCell('tableNewGL', newGL);
         formatTableCell('tableNewPerc', newPerc.toFixed(2) + "%", newGL);
+        
+        // Auto scroll to results on mobile
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
     }
 
     function formatTableCell(id, value, compareVal = null) {
