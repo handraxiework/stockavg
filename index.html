@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,199 +13,324 @@
             --bg: #f8fafc;
             --border: #e2e8f0;
         }
-        
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 10px; color: #1e293b; margin: 0; }
-        
-        .container { max-width: 700px; margin: 10px auto; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: var(--primary); margin-top: 0; font-size: 1.5rem; }
-        
-        /* Grid adjusts to 1 column on mobile */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        @media (max-width: 500px) {
-            .grid { grid-template-columns: 1fr; }
-            .full-width { grid-column: span 1; }
+
+        * {
+            box-sizing: border-box;
         }
-        
-        .full-width { grid-column: span 2; }
-        
-        label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 0.8rem; color: #475569; }
-        input { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 1rem; -webkit-appearance: none; }
-        input:focus { outline: none; border-color: var(--primary); }
-        
-        button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; margin-top: 5px; }
-        
-        .results { margin-top: 25px; display: none; }
-        .card { padding: 15px; border-radius: 12px; margin-bottom: 15px; background: #f8fafc; border: 1px solid var(--border); }
-        .card-title { font-weight: bold; border-bottom: 1px solid var(--border); margin-bottom: 10px; padding-bottom: 5px; color: var(--primary); font-size: 0.9rem; }
-        
-        .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
-        .val { font-weight: 700; }
-        .profit { color: var(--success); }
-        .loss { color: var(--danger); }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg);
+            padding: 10px;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 10px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary);
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Grid adjusts to 1 column on mobile */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 300px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: span 1;
+            }
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            -webkit-appearance: none;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+
+        .results {
+            margin-top: 25px;
+            display: none;
+        }
+
+        .card {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-weight: bold;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .val {
+            font-weight: 700;
+        }
+
+        .profit {
+            color: var(--success);
+        }
+
+        .loss {
+            color: var(--danger);
+        }
 
         /* THE FIX: Table wrapper for horizontal scroll on small screens */
-        .table-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 400px; /* Ensures table doesn't squish too much */ }
-        th, td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; }
-        th { background: #f1f5f9; color: #475569; }
-        tr:last-child td { border-bottom: none; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2>📈 Stock Average Calc</h2>
-    
-    <div class="grid">
-        <div class="input-group full-width">
-            <label>Stock Code / Name</label>
-            <input type="text" id="symbol" placeholder="e.g. BBCA">
-        </div>
-        <div class="input-group">
-            <label>Current Avg Price</label>
-            <input type="text" id="currAvg" class="number-input" placeholder="0" inputmode="decimal">
-        </div>
-        <div class="input-group">
-            <label>Current Total Lot</label>
-            <input type="text" id="currLot" class="number-input" placeholder="0" inputmode="numeric">
-        </div>
-        <div class="input-group">
-            <label>Last Market Price</label>
-            <input type="text" id="marketPrice" class="number-input" placeholder="0" inputmode="decimal">
-        </div>
-        <div class="input-group">
-            <label>Budget for New Purchase</label>
-            <input type="text" id="budget" class="number-input" placeholder="0" inputmode="numeric">
-        </div>
-    </div>
-
-    <button onclick="calculate()">Calculate New Position</button>
-
-    <div id="results" class="results">
-        <div class="card">
-            <div class="card-title">Purchase Analysis: <span id="resSymbol">-</span></div>
-            <div class="row">Lots to buy: <span id="newLots" class="val">-</span></div>
-            <div class="row">Shares to buy: <span id="newShares" class="val">-</span></div>
-            <div class="row">Estimated Cost: <span id="buyCost" class="val">-</span></div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Comparison Summary</div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Metric</th>
-                            <th>Current</th>
-                            <th>After Buy</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Avg Price</td>
-                            <td id="tableOldAvg">-</td>
-                            <td id="tableNewAvg" class="val">-</td>
-                        </tr>
-                        <tr>
-                            <td>Total Lots</td>
-                            <td id="tableOldLots">-</td>
-                            <td id="tableNewLots">-</td>
-                        </tr>
-                        <tr>
-                            <td>Gain/Loss Amt</td>
-                            <td id="tableOldGL">-</td>
-                            <td id="tableNewGL">-</td>
-                        </tr>
-                        <tr>
-                            <td>Gain/Loss %</td>
-                            <td id="tableOldPerc">-</td>
-                            <td id="tableNewPerc">-</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 10px; text-align: center;">(Swipe table left/right to view full data on mobile)</p>
-        </div>
-    </div>
-</div>
-
-<script>
-    // Format input with thousand separators
-    document.querySelectorAll('.number-input').forEach(input => {
-        input.addEventListener('input', function(e) {
-            let value = this.value.replace(/,/g, '');
-            if (!isNaN(value) && value !== "") {
-                this.value = parseFloat(value).toLocaleString('en-US');
-            } else {
-                this.value = "";
-            }
-        });
-    });
-
-    function getCleanValue(id) {
-        let val = document.getElementById(id).value.replace(/,/g, '');
-        return parseFloat(val) || 0;
-    }
-
-    function calculate() {
-        const symbol = document.getElementById('symbol').value || "Stock";
-        const currAvg = getCleanValue('currAvg');
-        const currLot = getCleanValue('currLot');
-        const marketPrice = getCleanValue('marketPrice');
-        const budget = getCleanValue('budget');
-
-        if (currAvg <= 0 || marketPrice <= 0) {
-            alert("Please enter valid prices.");
-            return;
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--border);
+            border-radius: 8px;
         }
 
-        const oldShares = currLot * 100;
-        const lotsToBuy = Math.floor((budget / marketPrice) / 100);
-        const sharesToBuy = lotsToBuy * 100;
-        const actualSpend = sharesToBuy * marketPrice;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 400px;
+            /* Ensures table doesn't squish too much */
+        }
 
-        const oldTotalCost = oldShares * currAvg;
-        const oldMarketVal = oldShares * marketPrice;
-        const oldGL = oldMarketVal - oldTotalCost;
-        const oldPerc = oldTotalCost > 0 ? (oldGL / oldTotalCost) * 100 : 0;
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
 
-        const totalSharesNew = oldShares + sharesToBuy;
-        const totalCostNew = oldTotalCost + actualSpend;
-        const newAvgPrice = totalSharesNew > 0 ? totalCostNew / totalSharesNew : 0;
-        const newMarketVal = totalSharesNew * marketPrice;
-        const newGL = newMarketVal - totalCostNew;
-        const newPerc = totalCostNew > 0 ? (newGL / totalCostNew) * 100 : 0;
+        th {
+            background: #f1f5f9;
+            color: #475569;
+        }
 
-        document.getElementById('results').style.display = 'block';
-        document.getElementById('resSymbol').innerText = symbol.toUpperCase();
-        document.getElementById('newLots').innerText = lotsToBuy.toLocaleString();
-        document.getElementById('newShares').innerText = sharesToBuy.toLocaleString();
-        document.getElementById('buyCost').innerText = actualSpend.toLocaleString();
+        tr:last-child td {
+            border-bottom: none;
+        }
+    </style>
+</head>
 
-        document.getElementById('tableOldAvg').innerText = currAvg.toLocaleString();
-        document.getElementById('tableNewAvg').innerText = newAvgPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        
-        document.getElementById('tableOldLots').innerText = currLot.toLocaleString();
-        document.getElementById('tableNewLots').innerText = (currLot + lotsToBuy).toLocaleString();
+<body>
 
-        formatTableCell('tableOldGL', oldGL);
-        formatTableCell('tableOldPerc', oldPerc.toFixed(2) + "%", oldGL);
-        formatTableCell('tableNewGL', newGL);
-        formatTableCell('tableNewPerc', newPerc.toFixed(2) + "%", newGL);
-        
-        // Auto scroll to results on mobile
-        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-    }
+    <div class="container">
+        <h2>📈 Stock Average Calc</h2>
 
-    function formatTableCell(id, value, compareVal = null) {
-        const el = document.getElementById(id);
-        const check = compareVal !== null ? compareVal : value;
-        el.innerText = typeof value === 'number' ? value.toLocaleString() : value;
-        el.className = check >= 0 ? 'profit' : 'loss';
-        if (check >= 0 && typeof value === 'number') el.innerText = "+" + el.innerText;
-    }
-</script>
+        <div class="grid">
+            <div class="input-group full-width">
+                <label>Stock Code / Name</label>
+                <input type="text" id="symbol" placeholder="e.g. BBCA">
+            </div>
+            <div class="input-group">
+                <label>Current Avg Price</label>
+                <input type="text" id="currAvg" class="number-input" placeholder="0" inputmode="decimal">
+            </div>
+            <div class="input-group">
+                <label>Current Total Lot</label>
+                <input type="text" id="currLot" class="number-input" placeholder="0" inputmode="numeric">
+            </div>
+            <div class="input-group">
+                <label>Last Market Price</label>
+                <input type="text" id="marketPrice" class="number-input" placeholder="0" inputmode="decimal">
+            </div>
+            <div class="input-group">
+                <label>Budget for New Purchase</label>
+                <input type="text" id="budget" class="number-input" placeholder="0" inputmode="numeric">
+            </div>
+        </div>
+
+        <button onclick="calculate()">Calculate New Position</button>
+
+        <div id="results" class="results">
+            <div class="card">
+                <div class="card-title">Purchase Analysis: <span id="resSymbol">-</span></div>
+                <div class="row">Lots to buy: <span id="newLots" class="val">-</span></div>
+                <div class="row">Shares to buy: <span id="newShares" class="val">-</span></div>
+                <div class="row">Estimated Cost: <span id="buyCost" class="val">-</span></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Comparison Summary</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Current</th>
+                                <th>After Buy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Avg Price</td>
+                                <td id="tableOldAvg">-</td>
+                                <td id="tableNewAvg" class="val">-</td>
+                            </tr>
+                            <tr>
+                                <td>Total Lots</td>
+                                <td id="tableOldLots">-</td>
+                                <td id="tableNewLots">-</td>
+                            </tr>
+                            <tr>
+                                <td>Gain/Loss Amt</td>
+                                <td id="tableOldGL">-</td>
+                                <td id="tableNewGL">-</td>
+                            </tr>
+                            <tr>
+                                <td>Gain/Loss %</td>
+                                <td id="tableOldPerc">-</td>
+                                <td id="tableNewPerc">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 10px; text-align: center;">(Swipe table
+                    left/right to view full data on mobile)</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Format input with thousand separators
+        document.querySelectorAll('.number-input').forEach(input => {
+            input.addEventListener('input', function (e) {
+                let value = this.value.replace(/,/g, '');
+                if (!isNaN(value) && value !== "") {
+                    this.value = parseFloat(value).toLocaleString('en-US');
+                } else {
+                    this.value = "";
+                }
+            });
+        });
+
+        function getCleanValue(id) {
+            let val = document.getElementById(id).value.replace(/,/g, '');
+            return parseFloat(val) || 0;
+        }
+
+        function calculate() {
+            const symbol = document.getElementById('symbol').value || "Stock";
+            const currAvg = getCleanValue('currAvg');
+            const currLot = getCleanValue('currLot');
+            const marketPrice = getCleanValue('marketPrice');
+            const budget = getCleanValue('budget');
+
+            if (currAvg <= 0 || marketPrice <= 0) {
+                alert("Please enter valid prices.");
+                return;
+            }
+
+            const oldShares = currLot * 100;
+            const lotsToBuy = Math.floor((budget / marketPrice) / 100);
+            const sharesToBuy = lotsToBuy * 100;
+            const actualSpend = sharesToBuy * marketPrice;
+
+            const oldTotalCost = oldShares * currAvg;
+            const oldMarketVal = oldShares * marketPrice;
+            const oldGL = oldMarketVal - oldTotalCost;
+            const oldPerc = oldTotalCost > 0 ? (oldGL / oldTotalCost) * 100 : 0;
+
+            const totalSharesNew = oldShares + sharesToBuy;
+            const totalCostNew = oldTotalCost + actualSpend;
+            const newAvgPrice = totalSharesNew > 0 ? totalCostNew / totalSharesNew : 0;
+            const newMarketVal = totalSharesNew * marketPrice;
+            const newGL = newMarketVal - totalCostNew;
+            const newPerc = totalCostNew > 0 ? (newGL / totalCostNew) * 100 : 0;
+
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('resSymbol').innerText = symbol.toUpperCase();
+            document.getElementById('newLots').innerText = lotsToBuy.toLocaleString();
+            document.getElementById('newShares').innerText = sharesToBuy.toLocaleString();
+            document.getElementById('buyCost').innerText = actualSpend.toLocaleString();
+
+            document.getElementById('tableOldAvg').innerText = currAvg.toLocaleString();
+            document.getElementById('tableNewAvg').innerText = newAvgPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            document.getElementById('tableOldLots').innerText = currLot.toLocaleString();
+            document.getElementById('tableNewLots').innerText = (currLot + lotsToBuy).toLocaleString();
+
+            formatTableCell('tableOldGL', oldGL);
+            formatTableCell('tableOldPerc', oldPerc.toFixed(2) + "%", oldGL);
+            formatTableCell('tableNewGL', newGL);
+            formatTableCell('tableNewPerc', newPerc.toFixed(2) + "%", newGL);
+
+            // Auto scroll to results on mobile
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function formatTableCell(id, value, compareVal = null) {
+            const el = document.getElementById(id);
+            const check = compareVal !== null ? compareVal : value;
+            el.innerText = typeof value === 'number' ? value.toLocaleString() : value;
+            el.className = check >= 0 ? 'profit' : 'loss';
+            if (check >= 0 && typeof value === 'number') el.innerText = "+" + el.innerText;
+        }
+    </script>
 
 </body>
+
 </html>
