@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Average & Budget Calc</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: sans-serif;
+            background: var(--bg);
+            padding: 20px;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .results {
+            margin-top: 25px;
+            display: none;
+            border-top: 2px solid #f1f5f9;
+            padding-top: 20px;
+        }
+
+        .card {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: #f1f5f9;
+        }
+
+        .val {
+            font-weight: bold;
+            float: right;
+        }
+
+        .profit {
+            color: var(--success);
+        }
+
+        .loss {
+            color: var(--danger);
+        }
+
+        .info-text {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Stock Avg Calculator</h2>
+
+        <div class="input-group">
+            <label>Stock Symbol (e.g., AAPL or BBCA.JK)</label>
+            <input type="text" id="symbol" placeholder="Enter Symbol...">
+        </div>
+        <div class="input-group">
+            <label>Current Avg Price (per share)</label>
+            <input type="number" id="currAvg" placeholder="e.g. 1500">
+        </div>
+        <div class="input-group">
+            <label>Current Total Lot (1 Lot = 100 shares)</label>
+            <input type="number" id="currLot" placeholder="e.g. 10">
+        </div>
+        <div class="input-group">
+            <label>Budget Amount (Total Money to Spend)</label>
+            <input type="number" id="budget" placeholder="e.g. 5000000">
+        </div>
+
+        <button onclick="calculate()">Fetch Data & Calculate</button>
+
+        <div id="results" class="results">
+            <div class="card">
+                <div>Market Price: <span id="marketPrice" class="val">-</span></div>
+                <div class="info-text" id="fetchStatus">Status: Ready</div>
+            </div>
+
+            <div class="card">
+                <strong>Purchase Plan</strong>
+                <div style="margin-top:10px">Lots you can buy: <span id="newLots" class="val">-</span></div>
+                <div>Total Shares: <span id="totalNewShares" class="val">-</span></div>
+            </div>
+
+            <div class="card">
+                <strong>Current Position</strong>
+                <div style="margin-top:10px">Gain/Loss: <span id="currGL" class="val">-</span></div>
+                <div>Percentage: <span id="currPercent" class="val">-</span></div>
+            </div>
+
+            <div class="card" style="border-left: 5px solid var(--primary);">
+                <strong>New Estimated Average</strong>
+                <div style="margin-top:10px">New Avg Price: <span id="newAvg" class="val">-</span></div>
+                <div>New Gain/Loss: <span id="newGL" class="val">-</span></div>
+                <div>New Percentage: <span id="newPercent" class="val">-</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function calculate() {
+            const symbol = document.getElementById('symbol').value.toUpperCase();
+            const currAvg = parseFloat(document.getElementById('currAvg').value);
+            const currLot = parseFloat(document.getElementById('currLot').value);
+            const budget = parseFloat(document.getElementById('budget').value);
+            const status = document.getElementById('fetchStatus');
+
+            if (!symbol || !currAvg || !currLot || !budget) {
+                alert("Please fill all fields");
+                return;
+            }
+
+            status.innerText = "Fetching market price...";
+
+            try {
+                // Note: In a real app, use a real API key from Finnhub or AlphaVantage.
+                // Using a public API for demonstration (Yahoo Finance alternative)
+                const response = await fetch(`https://query1.finance.yahoo.com/v7/finance/chart/${symbol}`);
+                const data = await response.json();
+                const marketPrice = data.chart.result[0].meta.regularMarketPrice;
+
+                displayResults(marketPrice, currAvg, currLot, budget);
+                status.innerText = "Status: Updated from Market";
+            } catch (error) {
+                console.error(error);
+                status.innerText = "Error fetching price. (CORS limitation or invalid symbol)";
+                // Fallback for demo purposes if API fails: 
+                // alert("Note: Fetching from Yahoo directly in browser often hits CORS blocks. Check console.");
+            }
+        }
+
+        function displayResults(marketPrice, currAvg, currLot, budget) {
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('marketPrice').innerText = marketPrice.toLocaleString();
+
+            const currentShares = currLot * 100;
+            const sharesCanBuy = Math.floor(budget / marketPrice);
+            const lotsCanBuy = Math.floor(sharesCanBuy / 100);
+            const actualSharesBought = lotsCanBuy * 100; // Assuming buying in Lots
+            const moneySpent = actualSharesBought * marketPrice;
+
+            document.getElementById('newLots').innerText = lotsCanBuy;
+            document.getElementById('totalNewShares').innerText = actualSharesBought;
+
+            // 1. Current Stats
+            const currTotalCost = currentShares * currAvg;
+            const currMarketVal = currentShares * marketPrice;
+            const currDiff = currMarketVal - currTotalCost;
+            const currPerc = (currDiff / currTotalCost) * 100;
+
+            formatLabel('currGL', currDiff, true);
+            formatLabel('currPercent', currPerc.toFixed(2) + "%", currDiff >= 0);
+
+            // 2. New Stats
+            const totalSharesFinal = currentShares + actualSharesBought;
+            const totalCostFinal = currTotalCost + moneySpent;
+            const newAvgPrice = totalCostFinal / totalSharesFinal;
+            const newMarketVal = totalSharesFinal * marketPrice;
+            const newDiff = newMarketVal - totalCostFinal;
+            const newPerc = (newDiff / totalCostFinal) * 100;
+
+            document.getElementById('newAvg').innerText = newAvgPrice.toFixed(2);
+            formatLabel('newGL', newDiff, true);
+            formatLabel('newPercent', newPerc.toFixed(2) + "%", newDiff >= 0);
+        }
+
+        function formatLabel(id, value, isPositive) {
+            const el = document.getElementById(id);
+            el.innerText = typeof value === 'number' ? value.toLocaleString() : value;
+            el.className = isPositive ? 'val profit' : 'val loss';
+        }
+    </script>
+
+</body>
+
+</html>
